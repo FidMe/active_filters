@@ -1,8 +1,10 @@
 # ActiveFilters
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/active_filters`. To experiment with that code, run `bin/console` for an interactive prompt.
+Active Filters allows you to map incoming controller parameters to filter your resources by chaining scopes.
 
-TODO: Delete this and the text above, and describe your gem
+It is inspired by [Justin Weiss solution](https://www.justinweiss.com/articles/search-and-filter-rails-models-without-bloating-your-controller/) offering a cleaner way to declare your filters.
+
+The gem [has_scope](https://github.com/plataformatec/has_scope) exists but does not handle params stored as the value of a hash.
 
 ## Installation
 
@@ -14,7 +16,7 @@ gem 'active_filters'
 
 And then execute:
 
-    $ bundle
+    $ bundle install
 
 Or install it yourself as:
 
@@ -22,13 +24,83 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Let's say you have several scopes on your User model
 
-## Development
+```ruby
+class User < ApplicationRecord
+    scope :country, -> country_code { where(country: country_code) }
+    scope :gender, -> gender { where(gender: gender) }
+end
+```
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+And you want to chain thoses two scopes.
+You first need to include the Filterable controller module in your application controller
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+```ruby
+class ApplicationController < ActionController::Base
+    include ActiveFilters::Controller::Filterable
+end
+```
+
+and then include the model Filterable one in the model you want to filter.
+
+```ruby
+class User < ApplicationRecord
+    include ActiveFilters::Model::Filterable
+
+    scope :country, -> country_code { where(country: country_code) }
+    scope :gender, -> gender { where(gender: gender) }
+end
+```
+
+Then you just need to declare your named scopes as filters using the `has_filters` DSL
+
+```ruby
+class UsersController < ApplicationController
+    has_filters :country, :gender
+end
+```
+
+and apply them to a specific resource using the `filter` class method and the `filterable params` hash of params as argument.
+
+```ruby
+class UsersController < ApplicationController
+    has_filters :country, :gender
+
+    def index
+        @users = User.filter(filterable_params)
+    end
+end
+```
+
+For each request:
+
+```
+/users
+#=> acts like a normal request
+
+/users?country=FR&gender=female
+#=> calls the named scope and bring only females in France
+```
+
+Now let's say you want to use incoming params stored as the value of a hash as scopes:
+
+```
+/users?filter[country]=FR&filter[gender]=female
+#=> { filter: { country: 'FR', gender: 'female' } }
+```
+
+Then you can add the `in_key` attribute with the name of the key in which params are stored.
+
+```ruby
+class UsersController < ApplicationController
+    has_filters :country, :gender, in_key: :filter
+
+    def index
+        @users = User.filter(filterable_params)
+    end
+end
+```
 
 ## Contributing
 
