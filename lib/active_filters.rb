@@ -1,9 +1,11 @@
 require "active_filters/version"
+require "active_support/all"
+require_relative "active_filters/setup"
 
 module ActiveFilters
   module Model
     module Filterable
-      extend ActiveSupport::Concern
+      extend ::ActiveSupport::Concern
 
       class_methods do
         def filter(filterable_params)
@@ -19,17 +21,23 @@ module ActiveFilters
 
   module Controller
     module Filterable
-      extend ActiveSupport::Concern
+      extend ::ActiveSupport::Concern
 
       class_methods do
         def has_filters(*filters)
-          filter_key = filters.last[:in_key]
-          filters.pop
+          filter_key = filters.last.is_a?(Hash) && filters.last[:in_key]
+          filters.pop if filter_key
+
           define_method(:filterable_params) do
-            return {} unless @params[filter_key] && filters
-            @params[filter_key].slice(*filters)
+            return {} unless _get_filter_params(filter_key) && filters
+            _get_filter_params(filter_key).slice(*filters)
           end
         end
+      end
+
+      def _get_filter_params(filter_key)
+        _params = eval(::ActiveFilters::Setup.params_variable)
+        (filter_key ? _params[filter_key] : _params)
       end
     end
   end

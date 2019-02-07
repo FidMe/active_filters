@@ -102,6 +102,15 @@ class UsersController < ApplicationController
 end
 ```
 
+## Initializer
+
+By default the params variable used by Active Filters is `params`.
+If you want to use another params variable, you have to create an initializer in `config/initializers/active_filters.rb` and set the variable name: (for instance with @params)
+
+```ruby
+ActiveFilters::Setup.params_variable = '@params'
+```
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/active_filters.
