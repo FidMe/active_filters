@@ -113,7 +113,7 @@ ActiveFilters::Setup.params_variable = '@params'
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/active_filters.
+Bug reports and pull requests are welcome on GitHub at https://github.com/FidMe/active_filters.
 
 ## License
 
