@@ -1,19 +1,25 @@
-require "active_filters/version"
-require "active_support/all"
-require_relative "active_filters/setup"
+require 'active_filters/version'
+require 'active_support/all'
+require 'active_record'
+require_relative 'active_filters/setup'
 
 module ActiveFilters
   module Model
     module Filterable
       extend ::ActiveSupport::Concern
-
-      class_methods do
-        def filter(filterable_params)
+      included do
+        scope :with_filter, ->(filterable_params) {
           results = all
           (filterable_params || []).each do |key, value|
             results = results.public_send(key, value) if value.present?
           end
           results
+        }
+      end
+
+      class_methods do
+        def filter(params)
+          with_filter(params)
         end
       end
     end

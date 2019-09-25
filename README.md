@@ -68,7 +68,7 @@ class UsersController < ApplicationController
     has_filters :country, :gender
 
     def index
-        @users = User.filter(filterable_params)
+        @users = User.with_filter(filterable_params)
     end
 end
 ```
