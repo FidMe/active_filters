@@ -55,7 +55,7 @@ GEM
       nokogiri (>= 1.6)
     rails-html-sanitizer (1.0.4)
       loofah (~> 2.2, >= 2.2.2)
-    rake (10.5.0)
+    rake (13.0.1)
     thread_safe (0.3.6)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
@@ -71,7 +71,7 @@ DEPENDENCIES
   bundler (~> 1.17.2)
   minitest (~> 5.0)
   mocha (>= 1.8.0)
-  rake (~> 10.0)
+  rake (~> 13.0)
 
 BUNDLED WITH
    1.17.3
