@@ -57,7 +57,7 @@ GEM
       loofah (~> 2.2, >= 2.2.2)
     rake (10.5.0)
     thread_safe (0.3.6)
-    tzinfo (1.2.5)
+    tzinfo (1.2.10)
       thread_safe (~> 0.1)
 
 PLATFORMS
